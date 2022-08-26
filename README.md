@@ -1,4 +1,4 @@
-# 台灣自動化控制 By.黃御德 Mail:asd281194533@gmail.com
+# 台灣自動化控制 By.黃御德
 # SerialManager
 串口管理器
 
