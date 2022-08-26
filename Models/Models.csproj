@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net48</TargetFrameworks>
+    <Nullable>enable</Nullable>	   
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<langversion>8.0</langversion>
+	</PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>
