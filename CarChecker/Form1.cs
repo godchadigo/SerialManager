@@ -217,7 +217,7 @@ namespace CarChecker
                 
                 if (item.Type != ReadButtonType.None)
                 {
-                    CheckBinding(Right_Grid, item.ButtonID , item.Type);
+                    CheckBinding(Right_Grid, item.ButtonID , item.Type , item.Area);
                 }
             }            
         }
@@ -240,6 +240,7 @@ namespace CarChecker
                 await Task.Delay(10000);
                 Console.WriteLine("44檢測結束!");
                 StopReadStatus_btn.PerformClick();
+
                 Console.WriteLine("22檢測結束!");
                 await Task.Delay(10000);
                 Console.WriteLine("22檢測結束!");
@@ -273,6 +274,18 @@ namespace CarChecker
             var data = ToolManager.Instance.GetDataByte(fake1);
             //調用解碼器
             var result = MainDecoder.Fixed_ETX_Decoder(data.ToArray(), "0D");
+        }
+        public void Test2()
+        {
+            Task.Run(async() => {
+                while (true)
+                {
+                    CarProtocol.Instance.StartReadStatusCommand(true, ReadButtonArea.Block1);
+                    await Task.Delay(10);
+                    CarProtocol.Instance.StartReadStatusCommand(true, ReadButtonArea.Block2);
+                    await Task.Delay(10);
+                }
+            }) ;
         }
         #endregion
 
@@ -646,9 +659,9 @@ namespace CarChecker
         /// <param name="gdv"></param>
         /// <param name="btnID"></param>
         /// <param name="checkType"></param>
-        private void CheckBinding(UIDataGridView gdv, int btnID, ReadButtonType checkType)
+        private void CheckBinding(UIDataGridView gdv, int btnID, ReadButtonType checkType , ReadButtonArea checkArea)
         {
-            var result = BindingList.Where(x => x.BindingButtonID == btnID && x.CheckType == checkType).FirstOrDefault();
+            var result = BindingList.Where(x => x.BindingButtonID == btnID && x.CheckType == checkType && x.Area == checkArea).FirstOrDefault();
             if (result != null)
             {
                 var gridRowID = GridProfile.Where(x => x.Value.ID == result.BindingGridID).FirstOrDefault();
