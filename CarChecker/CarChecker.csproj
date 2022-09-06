@@ -72,7 +72,7 @@
     <Compile Include="Models\GridProperty.cs" />
     <Compile Include="Models\GridStyle.cs" />
     <Compile Include="Models\MsSql\ButtonSqlModel.cs" />
-    <Compile Include="Models\ResultDataBindingModel.cs" />
+    <Compile Include="Models\Bindings\ResultDataBindingModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

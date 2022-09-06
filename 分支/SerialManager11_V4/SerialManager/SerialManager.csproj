@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.1</TargetFrameworks> 
+	<Nullable>enable</Nullable>	   	   	
+  </PropertyGroup>
+<PropertyGroup>
+    <langversion>8.0</langversion>
+</PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
+
+</Project>
