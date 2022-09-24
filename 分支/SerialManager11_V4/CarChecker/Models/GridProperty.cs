@@ -13,5 +13,6 @@ namespace CarChecker.Models
         public string Name { get; set; }
         public string Title { get; set; }
         public string Result { get; set; }
+        public bool IsUse { get; set; } = true;
     }
 }

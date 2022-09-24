@@ -11,5 +11,6 @@ namespace CarChecker.Models
     {
         public UIDataGridView Grid { get; set; }
         public UIStyle Style { get; set; }
+        public bool IsReadOnly { get; set; } = true;
     }
 }

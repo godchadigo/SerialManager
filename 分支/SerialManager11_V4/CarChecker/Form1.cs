@@ -1,7 +1,9 @@
 ﻿using AutoSizeManager;
 using CarChecker.Interface;
+using CarChecker.Managers;
 using CarChecker.Models;
 using CarChecker.Models.Checks;
+using CarChecker.Models.Sqlite;
 using Models.Serials;
 using NonProtocol.Managers;
 using NonProtocol.NonProtocols;
@@ -32,6 +34,7 @@ namespace CarChecker
         #region 全局變數
         private Dictionary<string, GridStyle> gridList = new Dictionary<string, GridStyle>();
         private Dictionary<int, GridProperty> GridProfile = new Dictionary<int, GridProperty>();
+        
         private List<ResultDataBindingModel> BindingList = new List<ResultDataBindingModel>();
 
         //解码器1解码器
@@ -48,6 +51,9 @@ namespace CarChecker
         public Form1()
         {
             InitializeComponent();
+            //Sqlite初始化
+            InitSqlite();
+
             //設定背景風格
             uiTableLayoutPanel1.Style = UIStyle.Black;
             uiTableLayoutPanel2.Style = UIStyle.Black;
@@ -61,7 +67,14 @@ namespace CarChecker
             RegisterTableList();
             //表格初始化
             GridInit();
+            
 
+        }
+        #endregion
+        #region Sqlite初始化
+        public void InitSqlite()
+        {
+            PropertysManager.Instance.Init();   //初始化載入參數到緩存
         }
         #endregion
 
@@ -172,7 +185,8 @@ namespace CarChecker
                     context.Queryable<DoorHistoryResult>().Where(
                     x =>
                     x.DetectionTime.Year == uiDatePicker1.Year &&
-                    x.DetectionTime.Month == uiDatePicker1.Month 
+                    x.DetectionTime.Month == uiDatePicker1.Month &&
+                    x.DetectionTime.Day == uiDatePicker1.Day
                     ).ToList();
                 SetRcodeDateTitle("查詢日期 : " + string.Format("{0}年/{1}月/{2}日", uiDatePicker1.Year, uiDatePicker1.Month, uiDatePicker1.Day));  //寫入查詢Barcode到Title
                 ClearRecodeRows();      //清除記錄表格
@@ -399,8 +413,7 @@ namespace CarChecker
             StringBuilder rawData = new StringBuilder();
             bool isNGResult = false;
             for (int i = 0; i < Right_Grid.Rows.Count; i++)
-            {
-                //sqlList.Add (Right_Grid.Rows[])
+            {                
                 var rowID = i;
                 int id = int.Parse(Right_Grid.Rows[rowID].Cells[0].Value.ToString());
                 string title = Right_Grid.Rows[rowID].Cells[1].Value.ToString();
@@ -454,12 +467,10 @@ namespace CarChecker
         {
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 1, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.Down, BindingButtonID = 1 });
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 13, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.Down, BindingButtonID = 7 });
+
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 14, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.Down, BindingButtonID = 9 });
-
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 15, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.WindowDown, BindingButtonID = 5 });
-
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 16, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.WindowUP, BindingButtonID = 5 });
-
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 17, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.Down, BindingButtonID = 8 });
 
             BindingList.Add(new ResultDataBindingModel() { BindingGridID = 18, Area = ReadButtonArea.Block1, CheckType = ReadButtonType.WindowDown, BindingButtonID = 6 });
@@ -514,52 +525,52 @@ namespace CarChecker
         {
             //Key為RowID
             //Value為GridProperty模型
-            GridProfile.Add(0, new GridProperty() { ID = 1, Title = "车窗锁", Result = "NG" });
+            GridProfile.Add(0, new GridProperty() { ID = 1, Title = "车窗锁", Result = "NG" , IsUse = true });
 
-            GridProfile.Add(1, new GridProperty() { ID = 2, Title = "后备箱開關", Result = "NG" });
+            GridProfile.Add(1, new GridProperty() { ID = 2, Title = "后备箱開關", Result = "NG", IsUse = true });
             //GridProfile.Add(2, new GridProperty() { ID = 3, Title = "開門拉手燈條", Result = "NG" });
             //GridProfile.Add(3, new GridProperty() { ID = 4, Title = "扶手氛圍燈", Result = "NG" });
             //GridProfile.Add(4, new GridProperty() { ID = 5, Title = "裝飾條氣氛燈", Result = "NG" });
-            GridProfile.Add(2, new GridProperty() { ID = 3, Title = "油箱蓋板開關1", Result = "NG" });
-            GridProfile.Add(3, new GridProperty() { ID = 4, Title = "油箱蓋板開關2", Result = "NG" });
-            GridProfile.Add(5, new GridProperty() { ID = 6, Title = "油箱蓋板開關3", Result = "NG" });
+            GridProfile.Add(2, new GridProperty() { ID = 3, Title = "油箱蓋板開關1", Result = "NG", IsUse = true });
+            GridProfile.Add(3, new GridProperty() { ID = 4, Title = "油箱蓋板開關2", Result = "NG", IsUse = true });
+            GridProfile.Add(5, new GridProperty() { ID = 6, Title = "油箱蓋板開關3", Result = "NG", IsUse = true });
 
-            GridProfile.Add(6, new GridProperty() { ID = 7, Title = "加熱按壓", Result = "NG" });
-            GridProfile.Add(7, new GridProperty() { ID = 8, Title = "通風按壓", Result = "NG" });
+            GridProfile.Add(6, new GridProperty() { ID = 7, Title = "加熱按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(7, new GridProperty() { ID = 8, Title = "通風按壓", Result = "NG", IsUse = true });
 
-            GridProfile.Add(8, new GridProperty() { ID = 9, Title = "按鍵M按壓", Result = "NG" });
-            GridProfile.Add(9, new GridProperty() { ID = 10, Title = "按鍵1按壓", Result = "NG" });
-            GridProfile.Add(10, new GridProperty() { ID = 11, Title = "按鍵2按壓", Result = "NG" });
-            GridProfile.Add(11, new GridProperty() { ID = 12, Title = "按鍵3按壓", Result = "NG" });
+            GridProfile.Add(8, new GridProperty() { ID = 9, Title = "按鍵M按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(9, new GridProperty() { ID = 10, Title = "按鍵1按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(10, new GridProperty() { ID = 11, Title = "按鍵2按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(11, new GridProperty() { ID = 12, Title = "按鍵3按壓", Result = "NG", IsUse = true });
 
-            GridProfile.Add(12, new GridProperty() { ID = 13, Title = "左後視鏡按壓", Result = "NG" });
+            GridProfile.Add(12, new GridProperty() { ID = 13, Title = "左後視鏡按壓", Result = "NG", IsUse = true });
 
 
-            GridProfile.Add(13, new GridProperty() { ID = 14, Title = "右後視鏡按壓", Result = "NG" });
-            GridProfile.Add(14, new GridProperty() { ID = 15, Title = "主駕駛車窗降下", Result = "NG" });
-            GridProfile.Add(15, new GridProperty() { ID = 16, Title = "主駕駛車窗升起", Result = "NG" });
-            GridProfile.Add(16, new GridProperty() { ID = 17, Title = "主駕駛車窗自動", Result = "NG" });
+            GridProfile.Add(13, new GridProperty() { ID = 14, Title = "右後視鏡按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(14, new GridProperty() { ID = 15, Title = "主駕駛車窗降下", Result = "NG", IsUse = true });
+            GridProfile.Add(15, new GridProperty() { ID = 16, Title = "主駕駛車窗升起", Result = "NG", IsUse = true });
+            GridProfile.Add(16, new GridProperty() { ID = 17, Title = "主駕駛車窗自動", Result = "NG", IsUse = true });
 
-            GridProfile.Add(17, new GridProperty() { ID = 18, Title = "副駕駛車窗降下", Result = "NG" });
-            GridProfile.Add(18, new GridProperty() { ID = 19, Title = "副駕駛車窗升起", Result = "NG" });
-            GridProfile.Add(19, new GridProperty() { ID = 20, Title = "副駕駛車窗自動", Result = "NG" });
+            GridProfile.Add(17, new GridProperty() { ID = 18, Title = "副駕駛車窗降下", Result = "NG", IsUse = true });
+            GridProfile.Add(18, new GridProperty() { ID = 19, Title = "副駕駛車窗升起", Result = "NG", IsUse = true });
+            GridProfile.Add(19, new GridProperty() { ID = 20, Title = "副駕駛車窗自動", Result = "NG", IsUse = true });
 
-            GridProfile.Add(20, new GridProperty() { ID = 21, Title = "後排右車窗降下", Result = "NG" });
-            GridProfile.Add(21, new GridProperty() { ID = 22, Title = "後排右車窗升起", Result = "NG" });
-            GridProfile.Add(22, new GridProperty() { ID = 23, Title = "按鍵R按壓", Result = "NG" });
+            GridProfile.Add(20, new GridProperty() { ID = 21, Title = "後排右車窗降下", Result = "NG", IsUse = true });
+            GridProfile.Add(21, new GridProperty() { ID = 22, Title = "後排右車窗升起", Result = "NG", IsUse = true });
+            GridProfile.Add(22, new GridProperty() { ID = 23, Title = "按鍵R按壓", Result = "NG", IsUse = true });
 
-            GridProfile.Add(23, new GridProperty() { ID = 24, Title = "後排左車窗降下", Result = "NG" });
-            GridProfile.Add(24, new GridProperty() { ID = 25, Title = "後排左車窗升起", Result = "NG" });
-            GridProfile.Add(25, new GridProperty() { ID = 26, Title = "後排左車窗自動", Result = "NG" });
+            GridProfile.Add(23, new GridProperty() { ID = 24, Title = "後排左車窗降下", Result = "NG", IsUse = true });
+            GridProfile.Add(24, new GridProperty() { ID = 25, Title = "後排左車窗升起", Result = "NG", IsUse = true });
+            GridProfile.Add(25, new GridProperty() { ID = 26, Title = "後排左車窗自動", Result = "NG", IsUse = true });
 
-            GridProfile.Add(26, new GridProperty() { ID = 27, Title = "後視鏡調節上按壓", Result = "NG" });
-            GridProfile.Add(27, new GridProperty() { ID = 28, Title = "後視鏡調節下按壓", Result = "NG" });
-            GridProfile.Add(28, new GridProperty() { ID = 29, Title = "後視鏡調節左按壓", Result = "NG" });
-            GridProfile.Add(29, new GridProperty() { ID = 30, Title = "後視鏡調節右按壓", Result = "NG" });
+            GridProfile.Add(26, new GridProperty() { ID = 27, Title = "後視鏡調節上按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(27, new GridProperty() { ID = 28, Title = "後視鏡調節下按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(28, new GridProperty() { ID = 29, Title = "後視鏡調節左按壓", Result = "NG", IsUse = true });
+            GridProfile.Add(29, new GridProperty() { ID = 30, Title = "後視鏡調節右按壓", Result = "NG", IsUse = true });
 
             //扩展
             #region 扩展
-            GridProfile.Add(9999, new GridProperty() { ID = 999, Title = "扩展按键描述", Result = "NG" });
+            GridProfile.Add(9999, new GridProperty() { ID = 999, Title = "扩展按键描述", Result = "NG", IsUse = false });
             #endregion
 
         }
@@ -572,6 +583,7 @@ namespace CarChecker
             gridList.Add("Right", new GridStyle() { Grid = Right_Grid, Style = UIStyle.DarkBlue });
             gridList.Add("Recode", new GridStyle() { Grid = Recode_Grid, Style = UIStyle.Black });
             gridList.Add("RawResult", new GridStyle() { Grid = RawResultAdvance_Grid, Style = UIStyle.DarkBlue });
+            gridList.Add("Setting", new GridStyle() { Grid = Setting_Grid, Style = UIStyle.DarkBlue, IsReadOnly = false });
         }
         /// <summary>
         /// 所有表格初始化(內碼表格除外)
@@ -592,6 +604,17 @@ namespace CarChecker
                 {
                     InitRawResultAdvanceColumns();
                 }
+                if (grid.Key == "Setting")
+                {
+                    //InitSettingColumns();
+                    grid.Value.Grid.DataSource = GetSettingData();
+                    grid.Value.Grid.Columns[0].ReadOnly = true;
+                    grid.Value.Grid.Columns[1].ReadOnly = true;
+                }
+                else
+                {
+                    //GridStyleInit(grid.Value);
+                }
                 GridStyleInit(grid.Value);
             });
 
@@ -610,9 +633,11 @@ namespace CarChecker
             {
                 //取消自動排列
                 gdv.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
-                //ReadOnly
-                gdv.Columns[i].ReadOnly = true;
-
+                if (gs.IsReadOnly)
+                {
+                    //ReadOnly
+                    gdv.Columns[i].ReadOnly = true;
+                }                
                 //內容置中
                 gdv.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -630,7 +655,7 @@ namespace CarChecker
             //選取一整列
             gdv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             //隱藏前面小三角型
-            //gdv.RowHeadersVisible = false;
+            gdv.RowHeadersVisible = false;
             //隱藏第一列新增按鈕
             gdv.RowHeadersVisible = false;
             //取消標題列調整
@@ -642,6 +667,7 @@ namespace CarChecker
             //gdv.ColumnHeadersVisible = false;
             //取消多選
             gdv.MultiSelect = false;
+
             gdv.RowTemplate.Height = 25;
             gdv.ColumnHeadersHeight = 50;
 
@@ -720,9 +746,10 @@ namespace CarChecker
         private void InitRawResultAdvanceColumns()
         {
             RawResultAdvance_Grid.Columns.Add("ID", "ID");
-            RawResultAdvance_Grid.Columns.Add("Title", "Title");
-            RawResultAdvance_Grid.Columns.Add("Result", "Result");
+            RawResultAdvance_Grid.Columns.Add("標題", "標題");
+            RawResultAdvance_Grid.Columns.Add("結果", "結果");
         }
+
         /// <summary>
         /// 清除RawResult Grid Rows
         /// </summary>
@@ -903,14 +930,42 @@ namespace CarChecker
             table.Columns.Add("待測內容", typeof(string));
             table.Columns.Add("結果 ", typeof(string));
 
-            foreach (var x in GridProfile)
+            foreach (var x in PropertysManager.Instance.Propertys_List)
             {
-                var model = x.Value;
-                table.Rows.Add(model.ID, model.Title, model.Result);
+                var model = x;
+                if (model.PropertyValue)
+                {
+                    //DataRowView dv = new DataRowView();                    
+                    table.Rows.Add(model.Id, model.PropertyName, "NG");
+                }else
+                {
+                    table.Rows.Add(model.Id, model.PropertyName, "不量測");
+                }
+                
             }
             return table;
         }
+        /// <summary>
+        /// 初始化設定表格
+        /// </summary>
+        /// <returns></returns>
+        private DataTable GetSettingData()
+        {
+            DataTable table = new DataTable();
 
+            // Add columns.
+            table.Columns.Add("序號", typeof(string));
+            table.Columns.Add("待測內容", typeof(string));
+            table.Columns.Add("是否檢測", typeof(bool));
+
+            foreach (var x in PropertysManager.Instance.Propertys_List)
+            {
+                var model = x;
+                DataGridViewCheckBoxCell check = new DataGridViewCheckBoxCell();
+                table.Rows.Add(model.Id, model.PropertyName, model.PropertyValue);
+            }
+            return table;
+        }
         /// <summary>
         /// 設置右上較查詢的標題
         /// </summary>
